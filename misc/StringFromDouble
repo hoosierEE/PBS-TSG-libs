@@ -1,0 +1,21 @@
+// Convert Arduino double to a string, with 6 digits of precision.
+String stringFromDouble(double val)
+{
+    int32_t characteristic = floor(val);
+    int32_t mantissa = (val - characteristic) * 1000000;
+    return String(characteristic) + "." + String(mantissa);
+}
+
+// Convert Arduino double to a string, with N digits of precision.
+String stringFromDouble(double val, uint16_t N)
+{
+    uint32_t multiplier{1};
+    if (N != 0) {
+        for (int i = 0; i < N; i++)
+            multiplier *= 10;
+    }
+    // note the lack of check for overflow. be careful
+    int32_t characteristic = floor(val);
+    int32_t mantissa = (val - characteristic) * multiplier;
+    return String(characteristic) + "." + String(mantissa);
+}

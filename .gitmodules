@@ -1,0 +1,6 @@
+[submodule "ThirdPartyLibs/ADC"]
+	path = ThirdPartyLibs/ADC
+	url = https://github.com/pedvide/ADC
+[submodule "ThirdPartyLibs/LowPower_Teensy3"]
+	path = ThirdPartyLibs/LowPower_Teensy3
+	url = https://github.com/duff2013/LowPower_Teensy3
