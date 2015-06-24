@@ -4,22 +4,10 @@ These libraries help me do less wheel-reinventing.
 
 Installation
 ------------
-* Lite (just the first-party libraries):
 
-  ```sh
-  git clone https://github.com/hoosierEE/PBS-TSG-libs.git
-  ```
-
-* Full version with submodules:
-
-  ```sh
-  git clone https://github.com/hoosierEE/PBS-TSG-libs.git
-  cd ArduinoLibraries
-  git submodule init
-  git submodule update
-  ```
-
-> [learn about submodules](http://www.git-scm.com/book/en/Git-Tools-Submodules)
+```sh
+$ git clone https://github.com/hoosierEE/PBS-TSG-libs.git
+```
 
 Usage (PlatformIO)
 ------------------
