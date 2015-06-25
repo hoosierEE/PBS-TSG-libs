@@ -23,7 +23,7 @@
 
 #ifndef __EVENT_TIMER_H__
 #define __EVENT_TIMER_H__
-#include "Arduino.h"
+#include <Arduino.h>
 
 class EventTimer {
     public:
@@ -69,12 +69,9 @@ class EventTimer {
         // optionally override the `now` by giving some other number.
         void update(uint32_t now = micros())
         {
-            if (!running) {
-                return; // no-op, unless timer was started with begin()
-            }
+            if (!running) return; // no-op, unless timer was started with begin()
             currentTime = now;
 
-            // determine if the timer has overflowed (next <= now < last) or not (last < next <= now)
             if (next - now >= interval) {
                 next += interval;
                 expired = true; // THE MOST IMPORTANT THING IN THIS CLASS!

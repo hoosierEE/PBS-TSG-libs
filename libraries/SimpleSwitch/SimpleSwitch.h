@@ -4,7 +4,7 @@
 // Copyright (c) 2014-2015 Trustees of Indiana University
 // Author: Alex Shroyer
 
-// Assumes a normally-open, momentary switch with less than 10ms of bounce.
+// Assumes a normally open momentary switch with less than 10ms of bounce.
 // Connect to a digital pin; uses internal pull-up resistor.
 
 #ifndef __SIMPLESWITCH_H__
@@ -27,7 +27,7 @@ class SimpleSwitch
         }
         ~SimpleSwitch() {}
 
-        void update(uint32_t now)
+        void update(uint32_t now = micros())
         {
             currentTime = now;
             // Update after debounceInterval or more microseconds.
@@ -54,7 +54,6 @@ class SimpleSwitch
         bool getState() { return currentState; }
 
     private:
-
         // Return true once, then always false until next valid transition.  Sometimes called
         // an "immediate" debounce, because it responds to the first transition and ignores further
         // transitions for a set period.

@@ -4,8 +4,8 @@
 
 #include "EventTimer.h"
 
-uint32_t slow_blink_micros{100000}; // 1 second
-uint32_t fast_blink_micros{50000}; // 0.5 second
+const uint32_t slow_blink_micros{100000}; // 1 second
+const uint32_t fast_blink_micros{50000}; // 0.5 second
 EventTimer slowblink(slow_blink_micros);
 EventTimer fastblink(fast_blink_micros);
 
