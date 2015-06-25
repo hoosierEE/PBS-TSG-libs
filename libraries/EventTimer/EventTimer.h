@@ -75,7 +75,7 @@ class EventTimer {
             currentTime = now;
 
             // determine if the timer has overflowed (next <= now < last) or not (last < next <= now)
-            if (now >= next) {
+            if (next - now >= interval) {
                 next += interval;
                 expired = true; // THE MOST IMPORTANT THING IN THIS CLASS!
             } else {
