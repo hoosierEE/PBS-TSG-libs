@@ -55,17 +55,29 @@ poll is at `5 + interval == 9`
 Again, everything works out fine.
 
 ### Start at 7 with interval of 4
-Let's look at one more scenario.  What if your `next` is just after an overflow?
+Let's look at one more scenario.  What if `next` is just after an overflow?
 
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8
     . . . . . . . . . . . x . . . . x . . . . x . . . . x
                     ^now  ^next
     7 expired? no. (now > next) == false  ...uh-oh, we have a problem!
 
-Our single comparison is not sufficient.  We can cover this case by doing the comparison *after taking overflow into account*.
+Our single comparison is not sufficient.  We must take overflow into account.  Multiple valid approaches exist:
+
+* use another variable and another comparison: `now > next && now < last`
+* compare after possible overflow: `next - now > interval`
+
+Using the latter approach:
 
     8 expired? no. (next-now > interval) == true
     9 expired? no. (next-now > interval) == true
     0 expired? no. (next-now > interval) == true
     1 expired? yes. (next-now > interval) == false
+    2 expired? no. (next-now > interval) == true
+    3 expired? no. (next-now > interval) == true
+    4 expired? no. (next-now > interval) == true
+    5 expired? no. (next-now > interval) == true
+    6 expired? yes. (next-now > interval) == true
+    7 expired? no. (next-now > interval) == true
+    8 expired? no. (next-now > interval) == true
 
