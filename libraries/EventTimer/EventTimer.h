@@ -19,7 +19,7 @@
 //   1) microseconds avoids Arduino millis() rounding error
 //   2) does NOT use interrupts; must be continuously polled
 //   3) timer overflows do not affect update()
-//   4) (interval > 0) or it won't work
+//   4) interval is an unsigned 32 bit integer GREATER THAN zero
 
 #ifndef __EVENT_TIMER_H__
 #define __EVENT_TIMER_H__
@@ -52,13 +52,13 @@ class EventTimer {
                 running = false;
             }
             else {
-                last = now;
                 next = now + interval;
                 expired = false;
                 running = true;
             }
         }
 
+        // stop a timer but keep it around for future use
         void end(void)
         {
             running = false;
@@ -69,28 +69,26 @@ class EventTimer {
         // optionally override the `now` by giving some other number.
         void update(uint32_t now = micros())
         {
-            if (!running) return; // no-op, unless timer was started with begin()
+            if (!running) {
+                return; // no-op, unless timer was started with begin()
+            }
             currentTime = now;
 
-            expired = false;
             // determine if the timer has overflowed (next <= now < last) or not (last < next <= now)
-            if (((last < next) && (next <= now)) || ((next <= now) && (now < last))) {
-                last = next;
+            if (now >= next) {
                 next += interval;
                 expired = true; // THE MOST IMPORTANT THING IN THIS CLASS!
+            } else {
+                expired = false;
             }
         }
 
         inline bool hasExpired(void) const { return expired; }
         inline bool isRunning(void) const { return running; }
-        inline uint32_t getLastTimeout(void) const { return last; }
-        inline uint32_t getNextTimeout(void) const { return next; }
-        inline uint32_t getInterval(void) const { return interval; }
 
     private:
         bool expired; // has the timer expired?
         bool running;
-        uint32_t last; // when the timer expire last or the timer was started
         uint32_t next; // when the timer will expire next
         uint32_t currentTime;
         uint32_t interval;
