@@ -1,6 +1,6 @@
 Overflowing Timers
 ==================
-Is it sufficient to only do a single comparison?  Let's walk through some simplified scenarios.
+For polled timers, how can we know when the timer expires?  This document outlines an approach to the problem.
 
 ### start at 0 with an interval of 4
 next is at `0 + interval == 4`; poll every `1` interval; overflow is from `9` to `0`
@@ -16,12 +16,12 @@ Step through the sequence:
     2 expired? no: (now > next) == false
     3 expired? no: (now > next) == false
     4 expired? yes: (now > next) == true
-        set new expire time: (next = next + interval)
+        set new expire time: (next += interval)
     5 expired? no: (now > next) == false
     6 expired? no: (now > next) == false
     8 expired? no: (now > next) == false
     9 expired? yes: (now > next) == true
-        set new expire time: (next = next + interval)
+        set new expire time: (next += interval)
         next rolls over; becomes 4 instead of 14.
         timer also rolls over, becomes 0 instead of 10.
     0 expired? no: (now > next) == false
@@ -40,7 +40,7 @@ poll is at `5 + interval == 9`
     6 expired? no: (now > next) == false
     8 expired? no: (now > next) == false
     9 expired? yes: (now > next) == true
-        set new expire time: (next = next + interval)
+        set new expire time: (next += interval)
         next rolls over; becomes 4 instead of 14.
         timer also rolls over, becomes 0 instead of 10.
     0 expired? no: (now > next) == false
@@ -48,7 +48,7 @@ poll is at `5 + interval == 9`
     2 expired? no: (now > next) == false
     3 expired? no: (now > next) == false
     4 expired? yes: (now > next) == true
-        set new expire time: (next = next + interval)
+        set new expire time: (next += interval)
     5 expired? no: (now > next) == false
     ...
 
@@ -62,22 +62,26 @@ Let's look at one more scenario.  What if `next` is just after an overflow?
                     ^now  ^next
     7 expired? no. (now > next) == false  ...uh-oh, we have a problem!
 
-Our single comparison is not sufficient.  We must take overflow into account.  Multiple valid approaches exist:
+A single comparison is not sufficient because it does not take overflow into account.  Multiple approaches exist:
 
-* use another variable and another comparison: `now > next && now < last`
+* use another variable and another comparison: `now > next AND now < last`
 * compare after possible overflow: `next - now > interval`
 
 Using the latter approach:
 
-    8 expired? no. (next-now > interval) == true
-    9 expired? no. (next-now > interval) == true
-    0 expired? no. (next-now > interval) == true
-    1 expired? yes. (next-now > interval) == false
-    2 expired? no. (next-now > interval) == true
-    3 expired? no. (next-now > interval) == true
-    4 expired? no. (next-now > interval) == true
-    5 expired? no. (next-now > interval) == true
+    8 expired? no. (next-now > interval) == false
+    9 expired? no. (next-now > interval) == false
+    0 expired? no. (next-now > interval) == false
+    1 expired? yes. (next-now > interval) == true
+        set new expire time: (next += interval)
+    2 expired? no. (next-now > interval) == false
+    3 expired? no. (next-now > interval) == false
+    4 expired? no. (next-now > interval) == false
+    5 expired? no. (next-now > interval) == false
     6 expired? yes. (next-now > interval) == true
-    7 expired? no. (next-now > interval) == true
-    8 expired? no. (next-now > interval) == true
+        set new expire time: (next += interval)
+    2 expired? no. (next-now > interval) == false
+    7 expired? no. (next-now > interval) == false
+    8 expired? no. (next-now > interval) == false
+    ...
 
